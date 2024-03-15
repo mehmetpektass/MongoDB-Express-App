@@ -1,6 +1,6 @@
 const express = require("express");
-const connectToMongoDB = require('./db');
-const { db } = require('./db');
+const connectToMongoDB = require('./connection');
+const { db } = require('./connection');
 
 
 const app = express();
