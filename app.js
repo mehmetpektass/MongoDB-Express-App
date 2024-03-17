@@ -4,6 +4,8 @@ const connectToMongoDB = require('./mongo');
 
 const app = express();
 
+app.use(express.json());
+
 async function startServer() {
     try {
         const db =  await connectToMongoDB();
@@ -25,7 +27,20 @@ app.get('/api', async (req,res)=>{
         console.error("Error fetching data:", error);
         res.status(500).json({ error: "Error fetching data" });
     }
-} )
+} );
+
+app.post('/api' , async (req,res)=>{
+    try {
+        const book = req.body;
+        const db = await connectToMongoDB();
+        const addedBook = await db.collection('books').insertOne(book);
+        res.json(addedBook);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).json({ error: "There is a adding problem on server" });
+    }
+   
+})
 
 app.get('/', (req,res)=>{
     res.json({mesaj: "it's working"});
