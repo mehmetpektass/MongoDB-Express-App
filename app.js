@@ -1,5 +1,5 @@
 const express = require("express");
-const connectToMongoDB = require('./mongo');
+const {connectToMongoDB} = require('./mongo');
 
 
 const app = express();
@@ -9,6 +9,7 @@ app.use(express.json());
 async function startServer() {
     try {
         const db =  await connectToMongoDB();
+        app.locals.db=db;
         app.listen(3000, () =>{
         console.log("The server has started on port 3000");
         })
@@ -20,8 +21,8 @@ async function startServer() {
 
 app.get('/api', async (req,res)=>{
     try {
-        const db =  await connectToMongoDB();
-        const books = await db.collection('books').find().sort({nameOfBook:-1}).toArray();
+       
+        const books = await app.locals.db.collection('books').find().sort({nameOfBook:-1}).toArray();
         res.json(books);
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -33,7 +34,7 @@ app.post('/api' , async (req,res)=>{
     try {
         const book = req.body;
         const db = await connectToMongoDB();
-        const addedBook = await db.collection('books').insertOne(book);
+        const addedBook = await app.locals.db.collection('books').insertOne(book);
         res.json(addedBook);
     } catch (error) {
         console.error("Error fetching data:", error);
